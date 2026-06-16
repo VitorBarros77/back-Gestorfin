@@ -1,36 +1,27 @@
-// ===================================================
-// ARQUIVO: src/main/java/com/Projeto/GestorFin/entities/Categoria.java
-// PASTA:   entities
-// ===================================================
-
 package com.Projeto.GestorFin.entities;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categorias")
-public class Categoria {
+public class Categoria implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    // ID numérico gerado automaticamente pelo banco (AUTO_INCREMENT)
+   
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", columnDefinition = "VARCHAR(36)", updatable = false, nullable = false)
+    private String id;
 
-    // Relacionamento: muitas categorias pertencem a UM usuário
-    // @JoinColumn → coluna "usuario_id" é a chave estrangeira (FK) no banco
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
 
     @Column(nullable = false)
     private String nome;
 
-    // Aceita apenas "receita" ou "despesa"
     @Column(nullable = false)
     private String tipo;
 
-    // Cor em hexadecimal, ex: "#FF5733"
     private String cor;
 
     @Column(name = "padrao")
@@ -39,21 +30,17 @@ public class Categoria {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Preenche a data automaticamente antes de salvar
     @PrePersist
     protected void onCreate() {
+        
+        this.id        = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
     }
 
-    // Construtor vazio — obrigatório!
     public Categoria() {}
 
-    // Getters e Setters
-    public Long getId()                         { return id; }
-    public void setId(Long id)                  { this.id = id; }
-
-    public Usuario getUsuario()                 { return usuario; }
-    public void setUsuario(Usuario usuario)     { this.usuario = usuario; }
+    public String getId()                       { return id; }
+    public void setId(String id)                { this.id = id; }
 
     public String getNome()                     { return nome; }
     public void setNome(String nome)            { this.nome = nome; }

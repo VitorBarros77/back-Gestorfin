@@ -1,48 +1,45 @@
-// ===================================================
-// ARQUIVO: src/main/java/com/Projeto/GestorFin/entities/Transacao.java
-// PASTA:   entities
-// ===================================================
-
 package com.Projeto.GestorFin.entities;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "transacoes")
-public class Transacao {
+public class Transacao implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    // ID numérico gerado automaticamente pelo banco (AUTO_INCREMENT)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", columnDefinition = "VARCHAR(36)", updatable = false, nullable = false)
+    private String id;
 
-    // Relacionamento: muitas transações pertencem a UM usuário
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    // Relacionamento: muitas transações pertencem a UMA categoria
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
-    // Aceita apenas "receita" ou "despesa"
     @Column(nullable = false)
     private String tipo;
 
-    // BigDecimal é o tipo correto para dinheiro (evita erros de arredondamento)
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
-    // Descrição é opcional (pode ser nula)
     private String descricao;
 
-    // LocalDate = só a data, sem horário. Ex: 2025-05-10
     @Column(nullable = false)
     private LocalDate data;
+
+    @Column(name = "eh_meta", nullable = false)
+    private boolean ehMeta = false;
+
+    @Column(name = "meta_id", columnDefinition = "VARCHAR(36)")
+    private String metaId;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -52,6 +49,7 @@ public class Transacao {
 
     @PrePersist
     protected void onCreate() {
+        this.id        = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -61,34 +59,38 @@ public class Transacao {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Construtor vazio — obrigatório!
     public Transacao() {}
 
-    // Getters e Setters
-    public Long getId()                         { return id; }
-    public void setId(Long id)                  { this.id = id; }
+    public String getId()                        { return id; }
+    public void setId(String id)                 { this.id = id; }
 
-    public Usuario getUsuario()                 { return usuario; }
-    public void setUsuario(Usuario usuario)     { this.usuario = usuario; }
+    public Usuario getUsuario()                  { return usuario; }
+    public void setUsuario(Usuario usuario)      { this.usuario = usuario; }
 
-    public Categoria getCategoria()                 { return categoria; }
-    public void setCategoria(Categoria categoria)   { this.categoria = categoria; }
+    public Categoria getCategoria()              { return categoria; }
+    public void setCategoria(Categoria c)        { this.categoria = c; }
 
-    public String getTipo()                     { return tipo; }
-    public void setTipo(String tipo)            { this.tipo = tipo; }
+    public String getTipo()                      { return tipo; }
+    public void setTipo(String tipo)             { this.tipo = tipo; }
 
-    public BigDecimal getValor()                { return valor; }
-    public void setValor(BigDecimal valor)      { this.valor = valor; }
+    public BigDecimal getValor()                 { return valor; }
+    public void setValor(BigDecimal valor)       { this.valor = valor; }
 
-    public String getDescricao()                { return descricao; }
-    public void setDescricao(String descricao)  { this.descricao = descricao; }
+    public String getDescricao()                 { return descricao; }
+    public void setDescricao(String descricao)   { this.descricao = descricao; }
 
-    public LocalDate getData()                  { return data; }
-    public void setData(LocalDate data)         { this.data = data; }
+    public LocalDate getData()                   { return data; }
+    public void setData(LocalDate data)          { this.data = data; }
 
-    public LocalDateTime getCreatedAt()         { return createdAt; }
-    public void setCreatedAt(LocalDateTime v)   { this.createdAt = v; }
+    public boolean isEhMeta()                    { return ehMeta; }
+    public void setEhMeta(boolean ehMeta)        { this.ehMeta = ehMeta; }
 
-    public LocalDateTime getUpdatedAt()         { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime v)   { this.updatedAt = v; }
+    public String getMetaId()                    { return metaId; }
+    public void setMetaId(String metaId)         { this.metaId = metaId; }
+
+    public LocalDateTime getCreatedAt()          { return createdAt; }
+    public void setCreatedAt(LocalDateTime v)    { this.createdAt = v; }
+
+    public LocalDateTime getUpdatedAt()          { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime v)    { this.updatedAt = v; }
 }
